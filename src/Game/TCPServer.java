@@ -1,14 +1,10 @@
 package Game;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TCPServer {
     private Socket client;
@@ -16,16 +12,9 @@ public class TCPServer {
     private int jogadaCliente;
     ObjectOutputStream outObject;
     ObjectInputStream inObject;
-    private boolean conexaoCliente;
 
-    public TCPServer() {
-        this.jogada = -1;
-        this.jogadaCliente = -1;
-    }
-
-    public void iniciandoServidor() throws IOException, ClassNotFoundException {
-
-
+    // [Inicia conexao com cliente]
+    public void iniciandoServidor(RoundResult roundResult) throws IOException, ClassNotFoundException {
             new Thread() {
 
                 @Override
@@ -35,26 +24,24 @@ public class TCPServer {
                     while (true) {
                         try {
                             if(i == 0){
-                                System.out.println("teste");
+                                // [aqui eh criada a conexao com o cliente]
                                 ServerSocket slisten = new ServerSocket(16868);
                                 System.out.println("Aguardando Conexao...");
                                 client = slisten.accept();
-                                conexaoCliente = true;
-                                // envia o true da conexao para o cliente
-                                outObject = new ObjectOutputStream(client.getOutputStream());   //abre
+                                outObject = new ObjectOutputStream(client.getOutputStream());
                                 inObject = new ObjectInputStream(client.getInputStream());
                                 Main.setStatus(Status.GAME);
                                 i++;
-
                             }
+
                             System.out.println("lendo cliente...");
                             jogadaCliente = inObject.read();
                             System.out.println("cliente jogou: " + jogadaCliente);
-                            if(jogadaCliente != -1 /*&& jogada != -1*/){
+
+                            if(jogadaCliente > 0 && jogada > 0){
                                 Main.setStatus(Status.ROUNDRESULT);
+                                roundResult.setButtonsOn(false);
                             }
-                            //
-                            // Main.setStatus(Status.ROUNDRESULT);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -64,27 +51,24 @@ public class TCPServer {
 
     }
 
-    public boolean getConexaoCliente() {
-        return conexaoCliente;
+    // [Getters e setters]
+    public int getJogadaCliente() {
+        return jogadaCliente;
+    }
+
+    public void setJogadaCliente(int jogadaCliente) {
+        this.jogadaCliente = jogadaCliente;
     }
 
     public int getJogada() {
         return jogada;
     }
 
-    public int getJogadaCliente() {
-        return jogadaCliente;
+    public void setJogada(int jogada) {
+        this.jogada = jogada;
     }
 
     public ObjectOutputStream getOutObject() {
         return outObject;
-    }
-
-    public ObjectInputStream getInObject() {
-        return inObject;
-    }
-
-    public void getJogadaServer(int jogada){
-        this.jogada = jogada;
     }
 }

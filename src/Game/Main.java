@@ -1,10 +1,4 @@
 package Game;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -22,15 +16,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 
-
-/**
- *
- * @author almirpires
- */
 public class Main extends Application {
     private static double w = 1500, h = 900;
     private Group root;
@@ -42,9 +29,6 @@ public class Main extends Application {
     private KeyEvent key;
     private boolean keyPressed = false;
     public static TCPServer server = new TCPServer();
-    Socket client;
-    ObjectOutputStream outObject;
-    ObjectInputStream inObject;
     boolean checkConexao = false;
 
 
@@ -78,48 +62,14 @@ public class Main extends Application {
             }
         });
 
-        canvas.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                mouse = mouseEvent;
-//                System.out.println(mouseEvent.getX() + " " + mouseEvent.getY() + " " + mouseEvent.getEventType().getName());
-            }
-        });
-
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.SPACE) {
-                    if (!keyPressed) {
-                        key = keyEvent;
-                        keyPressed = true;
-                    }
-                } else {
-                    key = keyEvent;
-                }
-            }
-        });
-        scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                key = null;
-                if (keyEvent.getCode() == KeyCode.SPACE)
-                    keyPressed = false;
-            }
-        });
-
+        // [Game loop]
         AnimationTimer gameLoop = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
                 if (status == Status.MENU) {
-                    //primaryStage.setFullScreenExitHint(""); // deixa vazia a mensagem "clique esc para sair do modo tela cheia
-                   // primaryStage.setFullScreen(true);
                     menu.drawing(mouse, key, root);
-                    //if (mouse != null) {                //reseta o valor do mouse e assim qaundo o status for menu novamnete, ele vai ter q esperar outro clique
-                      //  mouse = null;
-                   // }
                     try {
                         Thread.sleep(16);
                     } catch (InterruptedException e) {
@@ -130,24 +80,21 @@ public class Main extends Application {
 
                     try {
                         if(checkConexao == false) {
-                            server.iniciandoServidor();
+                            server.iniciandoServidor(roundResult);
                             checkConexao = true;
 
                         }
-//                        if(server.getConexaoCliente()){
-//                            setStatus(Status.GAME);
-//                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
                 } else if(status == Status.GAME) {
-                    gameScreen.drawing(key, root, waitToPlay.getServer());
+                    gameScreen.drawing(key, root, server, roundResult);
                 } else if(status == Status.WAITINGOPPONENT) {
-                    waitingOpponent.drawing(key, root, gameScreen.getChoice());
+                    waitingOpponent.drawing(key, root, server, roundResult);
                 }else if(status == Status.ROUNDRESULT){
-                    roundResult.drawing(key, root);
+                    roundResult.drawing(key, root, server, gameScreen);
                 } else if(status == Status.INSTRUCTIONS){
                     instructions.drawing(key, root);
 
