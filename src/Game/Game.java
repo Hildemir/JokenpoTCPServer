@@ -6,11 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Game {
     private GraphicsContext gc;
@@ -20,8 +16,7 @@ public class Game {
     private static double w = 1500, h = 900;
     private MenuItem rock, paper, scissor;
     private int choice, points, clientPoints;
-    private int opponentChoice;
-    boolean buttonsOn;
+    private boolean buttonsOn;
 
 
     public Game(GraphicsContext gc, Status status, Group root) {
@@ -39,8 +34,6 @@ public class Game {
         this.scissor = new MenuItem(scissorImg, 1000,270,gc,root);   // x1= 1000 x2= 1000 + 300
         scissor.removeFromView(root);
         this.buttonsOn = false;
-//        this.playButton = new MenuItem(play, 500,570,gc,root);
-//        playButton.removeFromView(root);
     }
 
 
@@ -58,7 +51,7 @@ public class Game {
     public void drawing(KeyEvent key, Group root, TCPServer server, RoundResult roundResult){
         gc.drawImage(backgroundImg, 0,0,w,h);
         gc.drawImage(yourTurn, 330, 20, 800, 200);
-       // gc.drawImage(perg, 150,-100,1200,1100);
+
         if(!buttonsOn) {
             rock.addToView(root);
             paper.addToView(root);
@@ -107,7 +100,6 @@ public class Game {
                 root.getChildren().remove(1, root.getChildren().size());
                 setChoice(1);
                 server.setJogada(1);
-                System.out.println("joguei " + choice);
                 try {
                     server.getOutObject().writeInt(choice);
                     server.getOutObject().flush();
@@ -163,16 +155,9 @@ public class Game {
 
     }
 
-    public int getChoice() {
-        return choice;
-    }
 
     public void setChoice(int choice) {
         this.choice = choice;
-    }
-
-    public boolean getButtonsOn() {
-        return buttonsOn;
     }
 
     public void setButtonsOn(boolean buttonsOn) {

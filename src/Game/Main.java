@@ -12,11 +12,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 public class Main extends Application {
     private static double w = 1500, h = 900;
@@ -51,7 +47,7 @@ public class Main extends Application {
         WaitToPlay waitToPlay = new WaitToPlay(gc, status, root);
         WaitingOpponent waitingOpponent = new WaitingOpponent(gc, status, root);
         RoundResult roundResult = new RoundResult(gc, status, root);
-        //GameOver gameOver = new GameOver(gc);
+        GameOver gameOver = new GameOver(gc, root);
 
 
         canvas.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -75,11 +71,12 @@ public class Main extends Application {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
                 } else if(status == Status.WAITTOPLAY){
                     waitToPlay.drawing(key, root);
 
                     try {
-                        if(checkConexao == false) {
+                        if(!checkConexao) {
                             server.iniciandoServidor(roundResult);
                             checkConexao = true;
 
@@ -89,14 +86,21 @@ public class Main extends Application {
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
+
                 } else if(status == Status.GAME) {
                     gameScreen.drawing(key, root, server, roundResult);
+
                 } else if(status == Status.WAITINGOPPONENT) {
                     waitingOpponent.drawing(key, root, server, roundResult);
+
                 }else if(status == Status.ROUNDRESULT){
-                    roundResult.drawing(key, root, server, gameScreen);
+                    roundResult.drawing(key, root, server, gameScreen, gameOver);
+
                 } else if(status == Status.INSTRUCTIONS){
                     instructions.drawing(key, root);
+
+                } else if(status == Status.GAMEOVER){
+                    gameOver.drawing(key, root, menu, server);
 
                 } else if (status == Status.CLOSE) {
                     primaryStage.close();
@@ -110,14 +114,10 @@ public class Main extends Application {
     }
 
 
-        public static void main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 
-
-    public static Status getStatus() {
-        return status;
-    }
 
     public static void setStatus(Status status) {
         Main.status = status;

@@ -10,8 +10,8 @@ public class TCPServer {
     private Socket client;
     private int jogada;
     private int jogadaCliente;
-    ObjectOutputStream outObject;
-    ObjectInputStream inObject;
+    private ObjectOutputStream outObject;
+    private ObjectInputStream inObject;
 
     // [Inicia conexao com cliente]
     public void iniciandoServidor(RoundResult roundResult) throws IOException, ClassNotFoundException {
@@ -21,7 +21,7 @@ public class TCPServer {
                 public void run() {
                     int i = 0;
 
-                    while (true) {
+                    while(true) {
                         try {
                             if(i == 0){
                                 // [aqui eh criada a conexao com o cliente]
@@ -34,18 +34,38 @@ public class TCPServer {
                                 i++;
                             }
 
-                            System.out.println("lendo cliente...");
-                            jogadaCliente = inObject.read();
-                            System.out.println("cliente jogou: " + jogadaCliente);
+                            // [Se houver algum ganhador encerra thread e conexao]
+                            if(roundResult.getPoints() == 3 || roundResult.getClientPoints() == 3){
+                                try {
+                                    client.close();
+                                    this.interrupt();
+                                    break;
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
+                              System.out.println("lendo cliente...");
+                              jogadaCliente = inObject.read();
+                            System.out.println("jogada cliente: " + jogadaCliente);
+                              // [caso ja existam as duas jogadas feitas]
                             if(jogadaCliente > 0 && jogada > 0){
                                 Main.setStatus(Status.ROUNDRESULT);
                                 roundResult.setButtonsOn(false);
                             }
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
+
+//                    try {
+//                        client.close();
+//                        System.out.println("Ja deu boy");
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+
                 }
             }.start();
 

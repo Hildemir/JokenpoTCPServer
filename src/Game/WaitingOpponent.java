@@ -9,16 +9,14 @@ public class WaitingOpponent {
     private GraphicsContext gc;
     private Status status;
     private Group root;
-    private Image backgroundImg, waitingOpponent, rockImg, paperImg, scissorImg, loading, circle, yourPoints;
+    private Image backgroundImg, waitingOpponent, rockImg, paperImg, scissorImg, loading;
     private static double w = 1500, h = 900;
-    private int choice, points;
 
     // [Construtor]
     public WaitingOpponent(GraphicsContext gc, Status status, Group root) {
         this.gc = gc;
         this.status = status;
         this.root = root;
-       // this.points = 0;
         images();
     }
 
@@ -30,8 +28,6 @@ public class WaitingOpponent {
         paperImg = new Image("/Resources/paper.png");
         scissorImg = new Image("/Resources/scissor.png");
         loading = new Image("/Resources/loadingTransparent.gif");
-      //  circle = new Image("/Resources/circle.png");
-        //yourPoints = new Image("/Resources/yourPoints.png");
     }
 
     // [Desenha tela WaitingOpponent]

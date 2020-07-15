@@ -49,27 +49,8 @@ public class RoundResult {
     }
 
     // [Desenha tela RoundResult]
-    public void drawing(KeyEvent key, Group root, TCPServer server, Game gameScreen) {
-        gc.drawImage(backgroundImg, 0, 0, w, h);
-        // [Exibe carta jogada pelo servidor]
-        if(server.getJogada() == 1){
-            gc.drawImage(rockImg, 250, 270);
-        } else if(server.getJogada() == 2){
-            gc.drawImage(paperImg, 250, 270);
-        }else if(server.getJogada() == 3){
-            gc.drawImage(scissorImg, 250, 270);
-        }
-
-        // [Exibe carta jogada pelo cliente]
-        if(server.getJogadaCliente() == 1){
-            gc.drawImage(rockImg, 920, 270);
-        } else if(server.getJogadaCliente() == 2){
-            gc.drawImage(paperImg, 920, 270);
-        }else if(server.getJogadaCliente() == 3){
-            gc.drawImage(scissorImg, 920, 270);
-        }
-
-        // [Exibindo resultado por partida]
+    public void drawing(KeyEvent key, Group root, TCPServer server, Game gameScreen, GameOver gameOver) {
+        // [Calcula resultado por partida]
         if (server.getJogada() == server.getJogadaCliente()) {
             title = deadlockMessage;
             result = deadlock;
@@ -96,10 +77,42 @@ public class RoundResult {
         if(title == youWin && contaPonto){
             points++;
             contaPonto = false;
-            System.out.println(points);
         } else if(title == youLose && contaPonto){
             clientPoints++;
             contaPonto = false;
+        }
+
+        // [Verifica ganhador]
+        if(points == 3 || clientPoints == 3){
+            if(points == 3){
+                gameOver.setGanhou(true);
+            }
+            Main.setStatus(Status.GAMEOVER);
+            // [Remove botao de nextRound]
+            nextButton.removeFromView(root);
+            // [Reinicia status do botao para futuras partidas]
+            setButtonsOn(true);
+        }
+
+        // [Exibe background]
+        gc.drawImage(backgroundImg, 0, 0, w, h);
+
+        // [Exibe carta jogada pelo servidor]
+        if(server.getJogada() == 1){
+            gc.drawImage(rockImg, 250, 270);
+        } else if(server.getJogada() == 2){
+            gc.drawImage(paperImg, 250, 270);
+        }else if(server.getJogada() == 3){
+            gc.drawImage(scissorImg, 250, 270);
+        }
+
+        // [Exibe carta jogada pelo cliente]
+        if(server.getJogadaCliente() == 1){
+            gc.drawImage(rockImg, 920, 270);
+        } else if(server.getJogadaCliente() == 2){
+            gc.drawImage(paperImg, 920, 270);
+        }else if(server.getJogadaCliente() == 3){
+            gc.drawImage(scissorImg, 920, 270);
         }
 
         gc.drawImage(title, 330, 20, 800, 200);
@@ -124,14 +137,6 @@ public class RoundResult {
                 server.setJogada(0);
             }
         });
-
-        if(points == 3 || clientPoints == 3){
-            Main.setStatus(Status.GAMEOVER);
-            // [Remove botao de nextRound]
-            nextButton.removeFromView(root);
-            // [Reinicia status do botao para futuras partidas]
-            setButtonsOn(false);
-        }
     }
 
     // [Getters e setters]
