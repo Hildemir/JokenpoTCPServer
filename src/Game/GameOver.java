@@ -33,7 +33,7 @@ public class GameOver {
         gatoSorte = new Image("/Resources/gatoDaFortuna.gif");
         confete = new Image("/Resources/confete.gif");
         angryCat = new Image("/Resources/angryCat.gif");
-        menuButtonImg = new Image("/Resources/jogar.png");
+        menuButtonImg = new Image("/Resources/sair.png");
     }
 
     // [Desenha tela GameOver]
